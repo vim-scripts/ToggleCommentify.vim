@@ -177,7 +177,7 @@ function s:FindCommentify() " {{{
 		let commentSymbol_L = 'FTE:'
 		let commentSymbol_R = ''
 	"[Feral:308/02@02:02] html -- first start/end comment
-	elseif fileType == 'html'
+	elseif fileType == 'html' || fileType == 'xml'
 		let commentSymbol_L = '<!-- '
 		let commentSymbol_R = ' -->'
 "[Feral:308/02@02:03] old style c /* */ comments; just because. -- not testing it now thought!
@@ -227,7 +227,7 @@ function s:FindCommentify() " {{{
 
 endfunction " }}}
 
-function s:DoCommentify(DaMode, DaOldCol, ...) " {{{
+function s:DoCommentify(DaMode, DaOldCol, ...) " 
 	"[Feral:300/02@07:24] To work with the range param, just add in the LR
 	"sniplet, the LR.openfold sniplet and then add LR as the range to the
 	"below subistutes. (I don't want to test these changes now!) TODO!
@@ -333,7 +333,7 @@ function s:DoCommentify(DaMode, DaOldCol, ...) " {{{
 	execute SavedMark
 	unlet SavedMark
 endfunction
-" }}}
+" 
 
 " Old Method:
 " Holding: {{{
