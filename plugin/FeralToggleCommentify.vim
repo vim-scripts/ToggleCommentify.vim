@@ -16,11 +16,24 @@
 "			Meikel Brandmeyer
 " \author	Meikel Brandmeyer <Brandels_Mikesh@web.de>
 " }}}
+" Contrabutions From: {{{
+"	Bernhard Wagner		(12-Nov-2002 xml changes)
+" }}}
 "
-" \date		Tue, 05 Nov 2002 15:18 Pacific Standard Time
-" \version	$Id: feraltogglecommentify.vim,v 1.5 2002/11/04 10:12:17 root Exp $
-" Version:	1.51
+" \date		Wed, 13 Nov 2002 05:28 Pacific Standard Time
+" \version	$Id: feraltogglecommentify.vim,v 1.7 2002/11/13 13:53:50 root Exp $
+" Version:	1.53
 " History: {{{
+"	[Feral:317/02@05:27] 1.53
+"		Addition:	Incorperated Bernhard Wagner's 12-Nov-2002 v1.52 xml
+"			changes
+"		Improvment:	Will make default mappings to <M-c> only if no map to
+"			<Plug>FtcTC and <M-c> is unused.
+"	[Feral:309/02@18:44] 1.52
+"		Merged DLAC with this; DLAC = duplicate line and comment, simple
+"			mappings that are handy to use to save and comment a line before
+"			you mangle it. However this mangles mark z
+"		Bugfix:	mismatched <Plug> names; This is <Plug>FtcTc
 "	[Feral:308/02@02:11] 1.51
 "		Hacked in eol comments and added html's <!-- --> comments.
 "	[Feral:300/02@07:03] 1.5
@@ -164,7 +177,8 @@ function s:FindCommentify() " {{{
 	if fileType == 'ox' || fileType == 'cpp' || fileType == 'php' || fileType == 'java'
 		let commentSymbol_L = '//'
 		let commentSymbol_R = ''
-	" [Feral:201/02@01:17] ftf is my hypertext markup format. (which is to say txt with a few special chars)
+	"[Feral:201/02@01:17] ftf is my hypertext markup format. (which is to say
+	"	txt with a few special chars)
 	elseif fileType == 'ftf'
 		let commentSymbol_L = '//'
 		let commentSymbol_R = ''
@@ -173,10 +187,13 @@ function s:FindCommentify() " {{{
 		let commentSymbol_L = '//'
 		let commentSymbol_R = ''
 	"[Feral:303/02@19:20] fte
+	"[Feral:317/02@05:23] fte is a template expansion system; unreleased as of
+	"	yet.
 	elseif fileType == 'fte'
 		let commentSymbol_L = 'FTE:'
 		let commentSymbol_R = ''
 	"[Feral:308/02@02:02] html -- first start/end comment
+	"12-Nov-2002: Bernhard Wagner's xml handling
 	elseif fileType == 'html' || fileType == 'xml'
 		let commentSymbol_L = '<!-- '
 		let commentSymbol_R = ' -->'
@@ -227,7 +244,7 @@ function s:FindCommentify() " {{{
 
 endfunction " }}}
 
-function s:DoCommentify(DaMode, DaOldCol, ...) " 
+function s:DoCommentify(DaMode, DaOldCol, ...) " {{{
 	"[Feral:300/02@07:24] To work with the range param, just add in the LR
 	"sniplet, the LR.openfold sniplet and then add LR as the range to the
 	"below subistutes. (I don't want to test these changes now!) TODO!
@@ -333,145 +350,6 @@ function s:DoCommentify(DaMode, DaOldCol, ...) "
 	execute SavedMark
 	unlet SavedMark
 endfunction
-" 
-
-" Old Method:
-" Holding: {{{
-"function! <SID>ToggleCommentify(...) " {{{
-"
-"	if(a:0 == 0)
-"		let CommentSymbol = <SID>FindCommentify()
-"	else
-"		let CommentSymbol = a:1
-"	endif
-"
-"	" [Feral:201/02@01:46] GATE: nothing to do if we have no comment symbol.
-"	if CommentSymbol == ''
-"		return
-"	endif
-"
-""	" [Feral:201/02@01:15] I want to comment empty lines so this is remed out.
-""	let IsBlankLineString = getline(".")
-""	if IsBlankLineString != $
-""		" don't comment empty lines
-""		return
-""	endif
-"
-"	" [Feral:201/02@03:43] folded lines must be opend because a substitute
-"	" operation on a fold effects all lines of the fold. When called from a
-"	" range the result is that the lines of the fold have the substitute
-"	" command executed on them as many times as there is folded lines.
-"	" So, as a HACK if there is a fold, open it.
-"	if(foldclosed(line(".")) != -1)
-"		:foldopen
-"	endif
-"
-"	let lineString = getline(".")
-"	" FERAL: extract the first x chars of the line, where x is the width/length of the comment symbol.
-"	let isCommented = strpart(lineString,0,strlen(CommentSymbol) )
-"	if isCommented == CommentSymbol
-"		" if the line is already commented, uncomment
-"		let CommentSymbol = escape(CommentSymbol, '/\\')
-"		set nohlsearch
-"		silent execute ':s/'.CommentSymbol.'//'
-"		set hlsearch
-"	else
-"		" if the line is uncommented, comment
-"		let CommentSymbol = escape(CommentSymbol, '/\\')
-"		set nohlsearch
-"		silent execute ':s/^/'.CommentSymbol.'/'
-"		set hlsearch
-"	endif
-"
-"	" Feral: I would prefer the cursor position be saved, however a range
-"	" command always starts with the cursor on col 1.
-"	execute "normal 0"
-"endfunction " }}}
-"function! <SID>Commentify(...) " {{{
-"
-"	if(a:0 == 0)
-"		let CommentSymbol = <SID>FindCommentify()
-"	else
-"		let CommentSymbol = a:1
-"	endif
-"
-"	" [Feral:201/02@01:46] GATE: nothing to do if we have no comment symbol.
-"	if CommentSymbol == ''
-"		return
-"	endif
-"
-""	" [Feral:201/02@01:15] I want to comment empty lines so this is remed out.
-""	let IsBlankLineString = getline(".")
-""	if IsBlankLineString != $
-""		" don't comment empty lines
-""		return
-""	endif
-"
-"	" [Feral:201/02@03:43] folded lines must be opend because a substitute
-"	" operation on a fold effects all lines of the fold. When called from a
-"	" range the result is that the lines of the fold have the substitute
-"	" command executed on them as many times as there is folded lines.
-"	" So, as a HACK if there is a fold, open it.
-"	if(foldclosed(line(".")) != -1)
-"		:foldopen
-"	endif
-"
-"	let CommentSymbol = escape(CommentSymbol, '/\\')
-"	set nohlsearch
-"	" go to the beginning of the line and insert the comment symbol 
-"	execute ':s/^/'.CommentSymbol.'/'
-"	set hlsearch
-""	execute 'normal 0i'.CommentSymbol
-"
-"	" Feral: I would prefer the cursor position be saved, however a range
-"	" command always starts with the cursor on col 1.
-"	execute "normal 0"
-"endfunction " }}}
-"function! <SID>UnCommentify(...) " {{{
-"
-"	if(a:0 == 0)
-"		let CommentSymbol = <SID>FindCommentify()
-"	else
-"		let CommentSymbol = a:1
-"	endif
-"
-"	" [Feral:201/02@01:46] GATE: nothing to do if we have no comment symbol.
-"	if CommentSymbol == ''
-"		return
-"	endif
-"
-""	" [Feral:201/02@01:15] I want to comment empty lines so this is remed out.
-""	let IsBlankLineString = getline(".")
-""	if IsBlankLineString != $
-""		" don't comment empty lines
-""		return
-""	endif
-"
-"	" [Feral:201/02@03:43] folded lines must be opend because a substitute
-"	" operation on a fold effects all lines of the fold. When called from a
-"	" range the result is that the lines of the fold have the substitute
-"	" command executed on them as many times as there is folded lines.
-"	" So, as a HACK if there is a fold, open it.
-"	if(foldclosed(line(".")) != -1)
-"		:foldopen
-"	endif
-"
-"	let lineString = getline(".")
-"	" FERAL: extract the first x chars of the line, where x is the width/length of the comment symbol.
-"	let isCommented = strpart(lineString,0,strlen(CommentSymbol) )
-"	" [Feral:201/02@02:24] Only uncomment if the comment char is there (produces a string not found error otherwise).
-"	if isCommented == CommentSymbol
-"		let CommentSymbol = escape(CommentSymbol, '/\\')
-"		set nohlsearch
-"		" remove the first comment symbol found on a line
-"		execute ':s/'.CommentSymbol.'//'
-"		set hlsearch
-"	endif
-"
-"	" Feral: I would prefer the cursor position be saved, however a range
-"	" command always starts with the cursor on col 1.
-"	execute "normal 0"
-"endfunction " }}}
 " }}}
 
 "*****************************************************************
@@ -492,30 +370,36 @@ if !exists(":UC")
 	:command -nargs=? -range UC		:let b:FTCSaveCol = virtcol('.')|<line1>,<line2>call <SID>DoCommentify(2, b:FTCSaveCol, <f-args>)|:unlet b:FTCSaveCol
 endif
 
-if !hasmapto('<Plug>FtcTc')
-	nmap <unique>	<M-c>	<Plug>FbmTc
-	imap <unique>	<M-c>	<esc><Plug>FbmTc
-	vmap <unique>	<M-c>	<Plug>FbmTc
+if !hasmapto('<Plug>FtcTc') && mapcheck("<M-c>", "nvi") == ""
+	nmap <unique>	<M-c>	<Plug>FtcTc
+	vmap <unique>	<M-c>	<Plug>FtcTc
+	imap <unique>	<M-c>	<esc><Plug>FtcTc
 endif
-noremap <unique> <script> <Plug>FbmTc  :TC<CR>j
-" Holding Work: {{{
-"nnoremap <M-c> :TC<CR>j
-"inoremap <M-c> <ESC>:TC<CR>j
-"vnoremap <M-c> :TC<CR>j
+noremap <unique> <script> <Plug>FtcTc  :TC<CR>j
 
-" keep the place of the cursor by using mark z
-"nnoremap <M-c> mz:TC<CR>`zj
-"inoremap <M-c> <ESC>mz:TC<CR>`zj
-"vnoremap <M-c> mz:TC<CR>`zj
 
-"map <M-c>x :TC<CR>j
-"map <M-c>c :CC<CR>j
-"map <M-c>v :UC<CR>j
-"imap <M-c>x <ESC>:TC<CR>j
-"imap <M-c>c <ESC>:CC<CR>j
-"imap <M-c>v <ESC>:UC<CR>j
-" }}}
-"
+
+"[Feral:317/02@05:40] This is basicaly a hack; hopefully I'll COMBAK to this
+"	someday and clean it up. (there is no reason for a <plug> to rely on the
+"	:commands the script defines for example)
+" DLAC -- duplicate line(s) and comment.
+" Mangles mark z
+if exists(":CC") && exists(":UC")
+	if !hasmapto('<Plug>FtcDlacNormal') && mapcheck("<S-C-c>", "n") == ""
+		" Normal Same keys as Multi-Edit, fwiw.
+		"[Feral:314/02@19:28] Save shift is not recognised; these come out as
+		"	<C-c>, dern!
+		nmap <unique>	<S-C-c>	<plug>FtcDlacNormal
+	endif
+	if !hasmapto('<Plug>FtcDlacVisual') && mapcheck("<S-C-c>", "v") == ""
+		" visual maping to handle multiple lines...
+		vmap <unique>	<S-C-c>	<plug>FtcDlacVisual
+	endif
+
+	noremap		<unique> <script> <Plug>FtcDlacNormal	mzyyp`z:CC<CR>j
+	vnoremap	<unique> <script> <Plug>FtcDlacVisual	mz:CC<cr>gvyPgv:UC<CR>`z
+endif
+
 " }}}
 
 "End of file
