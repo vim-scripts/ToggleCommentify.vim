@@ -1,3 +1,8 @@
+" ToggleCommentify.vim
+" Maintainer:	Vincent Nijs <Vincent.Nijs@econ.kuleuven.ac.be>
+" Version:		1.1	
+" Last Change:	Sunday, June 3, 2001
+
 function! ToggleCommentify()
 	let lineString = getline(".")
 	if lineString != $									" don't comment empty lines
@@ -14,22 +19,22 @@ function! ToggleCommentify()
 			let commentSymbol = ''
 		endif
 		if isCommented == commentSymbol					
-			call s:UnCommentify(commentSymbol)			" if the line is already commented, uncomment
+			call UnCommentify(commentSymbol)			" if the line is already commented, uncomment
 		else
-			call s:Commentify(commentSymbol)			" if the line is uncommented, comment
+			call Commentify(commentSymbol)			" if the line is uncommented, comment
 		endif
 	endif
 endfunction
 
-function! s:Commentify(commentSymbol)	
+function! Commentify(commentSymbol)	
 	set nohlsearch	
-	execute ':s+^+'.a:commentSymbol.'+'
+	execute ':s+^+'.a:commentSymbol.'+'					" go to the beginning of the line and insert the comment symbol
 	set hlsearch	
 endfunction
 	
-function! s:UnCommentify(commentSymbol)	
+function! UnCommentify(commentSymbol)	
 	set nohlsearch	
-	execute ':s+'.a:commentSymbol.'++'
+	execute ':s+'.a:commentSymbol.'++'					" remove the first comment symbol found on a line
 	set hlsearch	
 endfunction
 			
